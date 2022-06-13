@@ -5,12 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <link rel="shortcut icon" type="image/ico" href="/src/assets/favicon.ico" />
-    <title>Solid App</title>
+    <title>Erik Skår – Terminal</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
 
     <script src="/src/index.tsx" type="module"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/sunburst.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <script>
+      import hljs from "highlight.js";
+
+      hljs.initHighlightingOnLoad();</script>
   </body>
 </html>
