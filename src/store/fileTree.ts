@@ -1,59 +1,25 @@
 import { createEffect, createRoot, createSignal } from 'solid-js';
-
-export type FileTreeNode = {
-  title: string,
-  content: string | null
-  children: Array<FileTreeNode>
-  parent: FileTreeNode | null
-}
-
-const projectsFolder: FileTreeNode = {
-  title: 'Projects',
-  content: null,
-  children: [],
-  parent: null
-}
-
-const documentsFolder: FileTreeNode = {
-  title: 'Documents',
-  content: null,
-  children: [projectsFolder],
-  parent: null
-}
-
-const picturesFolder: FileTreeNode = {
-  title: 'Pictures',
-  content: null,
-  children: [],
-  parent: null
-}
-
-const readme: FileTreeNode = {
-  title: 'Readme.md',
-  content: 'Welcome to my website. Please feel free to roam around the system as any other terminal',
-  children: [],
-  parent: null
-}
-
-const rootFolder: FileTreeNode = {
-  title: '~',
-  content: null,
-  children: [documentsFolder, picturesFolder, readme],
-  parent: null
-}
+import { FileTreeNode } from '../types';
+import { rootFolder } from '../data/nodes';
 
 const getPath = (input: FileTreeNode): string => {
-  let result = '~/erikskaar'
+  let root = '~/erikskaar'
+  const result = []
   let node = input
   while (node.parent !== null) {
-    result += `/${node.title}`
+    result.push(node.title)
     node = node.parent
   }
-  return result + '>'
+  return `${root}/${result.reverse().join('/')}>`
 }
- // SET PARENT FOR ALL AT RENDER INSTEAD TO FIX TREE COMMANDO
-const setParentOfChildren = (node: FileTreeNode) => {
-  node.children.forEach((child) => child.parent = node)
+
+const setParentOfAllChildren = (node: FileTreeNode) => {
+  node.children.forEach((child) => {
+    child.parent = node
+    if (child.children.length > 0) {
+      setParentOfAllChildren(child)
+    }
+  })
 }
 
 const createFileTree = () => {
@@ -62,7 +28,7 @@ const createFileTree = () => {
   const [currentPath, setCurrentPath] = createSignal(getPath(currentNode()))
 
   createEffect(() => setCurrentPath(getPath(currentNode())))
-  createEffect(() => setParentOfChildren(currentNode()))
+  createEffect(() => setParentOfAllChildren(rootNode()))
   return {currentNode, setCurrentNode, rootNode, currentPath}
 }
 
