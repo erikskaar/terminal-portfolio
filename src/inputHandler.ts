@@ -26,40 +26,42 @@ export const inputHandler = (input: LineContent, currentLines: Array<LineContent
     "mkdir <<folder name>> – Create folder \n\n"
   )
 
-  switch (input.content.split(' ')[0]) {
+  const tokens = input.content.split(' ');
+
+  switch (tokens[0]) {
     case "cd":
-      if (input.content.split(' ')[1] === '..') {
+      if (tokens[1] === '..') {
         if (fileTree.currentNode().parent !== null) {
           fileTree.setCurrentNode(fileTree.currentNode().parent!)
           return [...currentLines, line]
         } else {
           return [...currentLines, { ...line, content: `already at top level` }]
         }
-      } else if (input.content.split(' ')[1] === undefined) {
+      } else if (tokens[1] === undefined) {
         fileTree.setCurrentNode(fileTree.rootNode())
         return [...currentLines, line]
       }
-      const folder = findFolder(input.content.split(' ')[1])
+      const folder = findFolder(tokens[1])
       if (folder !== undefined) {
         fileTree.setCurrentNode(folder)
         return [...currentLines, line]
       }
-      return [...currentLines, { ...line, content: `could not find folder "${input.content.split(' ')[1]}"` }]
+      return [...currentLines, { ...line, content: `could not find folder "${tokens[1]}"` }]
     case "cat":
-      const file = findFile(input.content.split(' ')[1])
+      const file = findFile(tokens[1])
       if (file !== undefined) {
         return [...currentLines, { ...line, type: 'code', content: `${file.content}` }]
       }
-      return [...currentLines, { ...line, content: `could not find file "${input.content.split(' ')[1]}"` }]
+      return [...currentLines, { ...line, content: `could not find file "${tokens[1]}"` }]
     case "view":
-      const image = findFile(input.content.split(' ')[1])
+      const image = findFile(tokens[1])
       if (image !== undefined) {
         return [...currentLines, { ...line, type: 'image', content: `${image.content}`}]
       }
-      return [...currentLines, { ...line, content: `could not find file "${input.content.split(' ')[1]}"`}]
+      return [...currentLines, { ...line, content: `could not find file "${tokens[1]}"`}]
     case "touch":
       const newFile: FileTreeNode = {
-        title: input.content.split(' ')[1],
+        title: tokens[1],
         type: 'file',
         content: 'print(hello)',
         children: [],
@@ -69,7 +71,7 @@ export const inputHandler = (input: LineContent, currentLines: Array<LineContent
       return [...currentLines, line]
     case "mkdir":
       const newFolder: FileTreeNode = {
-        title: input.content.split(' ')[1],
+        title: tokens[1],
         type: 'folder',
         content: null,
         children: [],
