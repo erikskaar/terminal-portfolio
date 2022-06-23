@@ -58,6 +58,7 @@ const App: Component = () => {
             onInput={(e) => onInputChange(e)}
             value={currentLine().content}
             autofocus
+            spellcheck={false}
           />
         </div>
       </div>
