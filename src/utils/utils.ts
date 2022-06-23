@@ -1,5 +1,6 @@
-import fileTree from './store/fileTree';
-import { FileTreeNode } from './types';
+import fileTree from '../store/fileTree';
+import { Command, FileTreeNode } from '../types';
+import { commands } from '../data/commands';
 
 export const filterOutFolders = (input: Array<FileTreeNode>): Array<FileTreeNode> => (
   input.filter((item) => item.content !== null)
@@ -38,4 +39,26 @@ export const printTreeStructure = (node: FileTreeNode, structure: Array<string> 
     }
   })
   return structure
+}
+
+export const findCommand = (input: string): Command | undefined => (
+  input.length > 0
+    ? commands.find((cm) => cm.name.startsWith(input))
+    : undefined
+)
+
+export const findNode = (command: Command, input: string): FileTreeNode | undefined => (
+  input.length > 0
+    ? fileTree.currentNode().children
+      .find((node) => node.title.startsWith(input) && node.type === command.nodeType)
+    : undefined
+)
+
+export const createSuggestion = (input: string): string => {
+  const commandInput = input.split(' ')[0]
+  if (commandInput.length === 0) return ''
+  const command = findCommand(commandInput)
+  const paramInput = input.split(' ')[1] || ''
+  const param = command && findNode(command, paramInput)
+  return `${command?.name || ''} ${param?.title || ''}`
 }

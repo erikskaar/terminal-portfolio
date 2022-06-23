@@ -6,13 +6,16 @@ import { createEffect, createSignal, For } from 'solid-js';
 import { inputHandler } from './inputHandler';
 import fileTree from './store/fileTree';
 import { LineContent } from './types';
+import Line from './components/Line';
+import { createSuggestion } from './utils/utils';
 
 const App: Component = () => {
-  const [prevLine, setPrevLine] = createSignal<LineContent>({ type: 'command', command: '', content: ''})
+  const [currentLine, setCurrentLine] = createSignal<LineContent>({ type: 'command', command: '', content: ''})
   const [prevLines, setPrevLines] = createSignal<Array<LineContent>>([])
+  const [suggestion, setSuggestion] = createSignal<string>('_')
 
   const onInputChange = (event: InputEvent & { currentTarget: HTMLInputElement; target: Element; }) => {
-    setPrevLine({ ...prevLine(), content: event.currentTarget.value })
+    setCurrentLine({ ...currentLine(), content: event.currentTarget.value })
   };
 
   const scrollToBottom = () => {
@@ -20,61 +23,43 @@ const App: Component = () => {
     scrollingElement.scrollTop = scrollingElement.scrollHeight
   }
   const listener = (event: KeyboardEvent): void => {
-    if (event.code === 'Enter' && prevLine().content !== "") {
+    if (event.code === 'Enter' && currentLine().content !== "") {
       event.preventDefault()
-      setPrevLines(inputHandler(prevLine(), prevLines()))
-      setPrevLine({ type: 'command', command: '', content: ''})
+      setPrevLines(inputHandler(currentLine(), prevLines()))
+      setCurrentLine({ type: 'command', command: '', content: ''})
       hljs.highlightAll()
       scrollToBottom()
+    } else if (event.code === 'Tab' && suggestion() !== '_') {
+      event.preventDefault()
+      setCurrentLine({ ...currentLine(), content: suggestion()})
     }
   }
   createEffect(() => document.getElementById("mainInput")?.addEventListener('keydown', listener))
   createEffect(() => document.getElementById("mainInput")?.addEventListener('blur', (event) =>
     document.getElementById("mainInput")?.focus())
   )
+  createEffect(() => setSuggestion(createSuggestion(currentLine().content)))
 
   return (
     <div class={styles.App} id="container">
       <div>
         <For each={prevLines()} fallback={""}>
-          {(line) => {
-            switch (line.type) {
-              // TODO: Fix
-              case 'command':
-                return (
-                  <>
-                    <p class={styles.line}>{line.command}</p>
-                    <p class={styles.line}>{line.content}</p>
-                  </>
-              )
-              case 'code':
-                return (
-                  <>
-                    <p class={styles.line}>{line.command}</p>
-                    <pre><code class={styles.code}>{line.content}</code></pre>
-                  </>
-                )
-              case 'image':
-                return (
-                  <>
-                    <p class={styles.line}>{line.command}</p>
-                    <img class={styles.image} src={line.content} />
-                  </>
-                )
-            }
-          }}
+          {(line) => (<Line line={line} />)}
         </For>
       </div>
       <div class={styles.mainInputContainer}>
         <span>{fileTree.currentPath()}</span>
-        <input
-          id="mainInput"
-          type="text"
-          class={styles.mainInput}
-          onInput={(e) => onInputChange(e)}
-          value={prevLine().content}
-          autofocus
-        />
+        <div class={styles.inputDiv}>
+          <p class={styles.placeholder}>{suggestion()}</p>
+          <input
+            id="mainInput"
+            type="text"
+            class={styles.mainInput}
+            onInput={(e) => onInputChange(e)}
+            value={currentLine().content}
+            autofocus
+          />
+        </div>
       </div>
     </div>
   );

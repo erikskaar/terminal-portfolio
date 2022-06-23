@@ -3,7 +3,7 @@ import { FileTreeNode } from '../types';
 //TODO: Retrieve data from backend
 const testTypescriptFile: FileTreeNode = {
   title: 'Test.ts',
-  type: 'file',
+  type: 'code',
   content: 'const createFileTree = () => {\n' +
     '  const [currentNode, setCurrentNode] = createSignal(rootFolder)\n' +
     '  const [rootNode] = createSignal(rootFolder)\n' +
@@ -35,7 +35,7 @@ const documentsFolder: FileTreeNode = {
 
 const surfPicture: FileTreeNode = {
   title: 'Surf.jpeg',
-  type: 'file',
+  type: 'image',
   content: 'src/surf.jpeg',
   children: [],
   parent: null
@@ -50,7 +50,7 @@ const picturesFolder: FileTreeNode = {
 
 const readme: FileTreeNode = {
   title: 'Readme.md',
-  type: 'file',
+  type: 'code',
   content: 'Welcome to my website. Please feel free to roam around the system as any other terminal',
   children: [],
   parent: null

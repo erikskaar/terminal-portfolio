@@ -1,4 +1,4 @@
-export type NodeType = 'folder' | 'file'
+export type NodeType = 'folder' | 'code' | 'image'
 
 export type FileTreeNode = {
   title: string,
@@ -14,4 +14,11 @@ export type LineContent = {
   type: LineType,
   command: string,
   content: string
+}
+
+export type Command = {
+  name: string,
+  helperText: string,
+  alt?: string | undefined
+  nodeType?: NodeType | undefined
 }

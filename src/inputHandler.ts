@@ -1,5 +1,5 @@
 import fileTree from './store/fileTree';
-import { findFile, findFolder, printTreeStructure } from './utils';
+import { findFile, findFolder, printTreeStructure } from './utils/utils';
 import { FileTreeNode, LineContent } from './types';
 
 export const inputHandler = (input: LineContent, currentLines: Array<LineContent>): Array<LineContent> => {
@@ -12,7 +12,7 @@ export const inputHandler = (input: LineContent, currentLines: Array<LineContent
     content: ''
   }
 
-  // TODO: Find a better system that just switch statements
+  // TODO: Find a better system than just switch statements
 
   const printHelp = (): string => (
     "\nAvailable commands are: \n\n" +
@@ -62,7 +62,7 @@ export const inputHandler = (input: LineContent, currentLines: Array<LineContent
     case "touch":
       const newFile: FileTreeNode = {
         title: tokens[1],
-        type: 'file',
+        type: 'code',
         content: 'print(hello)',
         children: [],
         parent: fileTree.currentNode()
@@ -79,11 +79,6 @@ export const inputHandler = (input: LineContent, currentLines: Array<LineContent
       }
       fileTree.currentNode().children.push(newFolder)
       return [...currentLines, line]
-    default:
-      break
-  }
-
-  switch (input.content) {
     case "clr":
       return []
     case "clear":
